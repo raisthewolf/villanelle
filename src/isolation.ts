@@ -1,6 +1,6 @@
 /* /// <reference path="scripting.ts"/> */
 import {
-    addAgent, setAgentVariable, addItem, addLocation, setVariable, getNextLocation, action,
+    addAgent, addPersonalityAgent, setAgentVariable, addItem, addLocation, setVariable, getNextLocation, action,
     getRandNumber, getVariable, sequence, selector, execute, Precondition, getAgentVariable, neg_guard, guard,
     isVariableNotSet, displayDescriptionAction, addUserAction, addUserInteractionTree, initialize,
     getUserInteractionObject, executeUserAction, worldTick, attachTreeToAgent, setItemVariable, getItemVariable,
@@ -42,7 +42,7 @@ addLocation(MR_CORRIDOR, [MEDICAL, QUARTERS2, BR_CORRIDOR]);
 addLocation(BR_CORRIDOR, [QUARTERS1]);
 
 // agents
-var alien = addAgent("Alien");
+var alien = addPersonalityAgent("Alien", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 // items
 var crewCard1 = addItem("Crew card1");

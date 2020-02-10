@@ -30,10 +30,25 @@ var blackboard = {};
 function getActionTick(id: number): ActionTick {
     return (precondition, effect, ticksRequired = 1) => {
         return () => {
+            var util = getVariable("utility");
+            if (util) {
+              if (!blackboard[id]) {
+                  blackboard[id] = {};
+              }
+              var utility = 1;
+              blackboard[id]["utility"] = utility;
+              setVariable("lastUtil", utility)
+              return Status.RUNNING;
+            }
+
             if (precondition()) {
                 if (!blackboard[id]) {
                     blackboard[id] = {};
                     blackboard[id].ticksDone = ticksRequired;
+                }
+
+                if (!blackboard[id].ticksDone) {
+                  blackboard[id].ticksDone = ticksRequired;
                 }
 
                 if (blackboard[id].ticksDone > 0) {
@@ -62,6 +77,24 @@ function getGuardTick(): GuardTick {
 function getSequenceTick(id: number): CompositeTick {
     return (astTicks) => {
         return () => {
+            var util = getVariable("utility");
+            if (util) {
+              if (!blackboard[id]) {
+                  blackboard[id] = {};
+                  blackboard[id].currentIndex = 0;
+              }
+              var utility = 0;
+              while (blackboard[id].currentIndex < astTicks.length) {
+                  var childStatus = execute(astTicks[blackboard[id].currentIndex]);
+                  blackboard[id].currentIndex += 1;
+                  utility += getVariable("lastUtil");
+              }
+              utility = utility/astTicks.length;
+              blackboard[id]["utility"] = utility;
+              setVariable("lastUtil", utility)
+              return Status.RUNNING;
+            }
+
             if (!blackboard[id]) {
                 blackboard[id] = {};
                 blackboard[id].currentIndex = 0;
@@ -85,6 +118,25 @@ function getSequenceTick(id: number): CompositeTick {
 function getSelectorTick(id: number): CompositeTick {
     return (astTicks) => {
         return () => {
+            var util = getVariable("utility");
+            if (util) {
+              if (!blackboard[id]) {
+                  blackboard[id] = {};
+                  blackboard[id].currentIndex = 0;
+              }
+              var utility = 0;
+              while (blackboard[id].currentIndex < astTicks.length) {
+                  var childStatus = execute(astTicks[blackboard[id].currentIndex]);
+                  blackboard[id].currentIndex += 1;
+                  if (utility < getVariable("lastUtil")){
+                    utility = getVariable("lastUtil")
+                  }
+              }
+              blackboard[id]["utility"] = utility;
+              setVariable("lastUtil", utility)
+              return Status.RUNNING;
+            }
+
             if (!blackboard[id]) {
                 blackboard[id] = {};
                 blackboard[id].currentIndex = 0;
@@ -106,6 +158,9 @@ function getSelectorTick(id: number): CompositeTick {
 }
 
 export function execute(astTick: Tick): Status {
+    setVariable("utility", true);
+    astTick();
+    setVariable("utility", false);
     return astTick();
 }
 
@@ -226,9 +281,28 @@ export function getNextLocation(start: string, destination: string): string {
 
 //1.2 agents
 var agents = [];
+var personalityAgents = [];
 
 export function addAgent(agentName: string) {
     agents.push(agentName);
+    return agentName;
+}
+
+export function addPersonalityAgent(agentName: string, o1: number, o2: number, c1: number,
+  c2: number, e1: number, e2: number, a1: number, a2: number, n1: number, n2: number) {
+    var personality = {};
+    personality["name"] = agentName;
+    personality["openness"] = o1;
+    personality["intellect"] = o2;
+    personality["industriousness"] = c1;
+    personality["orderliness"] = c2;
+    personality["enthusiasm"] = e1;
+    personality["assertiveness"] = e2;
+    personality["compassion"] = a1;
+    personality["politeness"] = a2;
+    personality["volatility"] = n1;
+    personality["withdrawal"] = n2;
+    personalityAgents.push(personality);
     return agentName;
 }
 
@@ -376,6 +450,13 @@ export function worldTick() {
         var tree = agentTrees[agents[i]];
         if (!isUndefined(tree)) {
             setVariable("executingAgent", agents[i]);
+            execute(tree);
+        }
+    }
+    for (var i = 0; i < personalityAgents.length; i++) {
+        var tree = agentTrees[personalityAgents[i]["name"]];
+        if (!isUndefined(tree)) {
+            setVariable("executingAgent", personalityAgents[i]["name"]);
             execute(tree);
         }
     }
