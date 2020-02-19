@@ -43,22 +43,62 @@ var playerSleep = setVariable("playerSleep", false);
 var playerPoisonTicks = setVariable("playerPoisonTicks", 0);
 var knowHerbs = setVariable("knowHerbs", false);
 var offer = setVariable("offer", false);
-var cured = setVariable("cure", false);
+var cure = setVariable("cure", false);
+var lastAction = setVariable("lastAction", "Tom is at his home.");
 
 // 2. Define BTs
 // movement actions
 let goToTOMS = action(() => true, () => {
     setAgentVariable(tom, "currentLocation", TOM_HOUSE);
-    console.log("Tom is at: " + getAgentVariable(tom, "currentLocation"))
-}, 0);
+    setVariable("lastAction", "Tom is at: " + getAgentVariable(tom, "currentLocation"));
+    console.log("Tom is at: " + getAgentVariable(tom, "currentLocation"));
+    console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+    console.log("Alchemist" + " " + getVariable("playerLocation"));
+    console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+    console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+    console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+    console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+    console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+    console.log("Sleep" + " " + getVariable("playerSleep"));
+    console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+    console.log("Know Herb" + " " + getVariable("knowHerbs"));
+    console.log("Offer" + " " + getVariable("offer"));
+    console.log("Cure" + " " + getVariable("cure"))
+}, 1);
 let goToALCH = action(() => true, () => {
     setAgentVariable(tom, "currentLocation", ALCH_HOUSE);
-    console.log("Tom is at: " + getAgentVariable(tom, "currentLocation"))
-}, 0);
+    setVariable("lastAction", "Tom is at: " + getAgentVariable(tom, "currentLocation"))
+    console.log("Tom is at: " + getAgentVariable(tom, "currentLocation"));
+    console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+    console.log("Alchemist" + " " + getVariable("playerLocation"));
+    console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+    console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+    console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+    console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+    console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+    console.log("Sleep" + " " + getVariable("playerSleep"));
+    console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+    console.log("Know Herb" + " " + getVariable("knowHerbs"));
+    console.log("Offer" + " " + getVariable("offer"));
+    console.log("Cure" + " " + getVariable("cure"))
+}, 1);
 let goToWOODS = action(() => true, () => {
     setAgentVariable(tom, "currentLocation", WOODS);
-    console.log("Tom is at: " + getAgentVariable(tom, "currentLocation"))
-}, 0);
+    setVariable("lastAction", "Tom is at: " + getAgentVariable(tom, "currentLocation"))
+    console.log("Tom is at: " + getAgentVariable(tom, "currentLocation"));
+    console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+    console.log("Alchemist" + " " + getVariable("playerLocation"));
+    console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+    console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+    console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+    console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+    console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+    console.log("Sleep" + " " + getVariable("playerSleep"));
+    console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+    console.log("Know Herb" + " " + getVariable("knowHerbs"));
+    console.log("Offer" + " " + getVariable("offer"));
+    console.log("Cure" + " " + getVariable("cure"))
+}, 1);
 
 
 //other actions
@@ -66,9 +106,22 @@ let goToWOODS = action(() => true, () => {
 let wait = action(
     () => true,
     () => {
-        console.log("Tom waits for this turn.")
+        setVariable("lastAction", "Tom waits for this turn.");
+        console.log("Tom waits for this turn.");
+        console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+        console.log("Alchemist" + " " + getVariable("playerLocation"));
+        console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+        console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+        console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+        console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+        console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+        console.log("Sleep" + " " + getVariable("playerSleep"));
+        console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+        console.log("Know Herb" + " " + getVariable("knowHerbs"));
+        console.log("Offer" + " " + getVariable("offer"));
+        console.log("Cure" + " " + getVariable("cure"))
     },
-    0
+    1
 );
 
 //tell the alchemist about the herbs
@@ -76,9 +129,22 @@ let tellAlchAboutHerbs = action(
     () => getAgentVariable(tom, "currentLocation") == getVariable("playerLocation") && !getVariable("playerSleep") && !getVariable("knowHerbs"),
     () => {
         setVariable("knowHerbs", true);
-        console.log("Tom tells you where you can find herbs to make a healing potion.")
+        setVariable("lastAction", "Tom tells you where you can find herbs to make a healing potion.");
+        console.log("Tom tells you where you can find herbs to make a healing potion.");
+        console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+        console.log("Alchemist" + " " + getVariable("playerLocation"));
+        console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+        console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+        console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+        console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+        console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+        console.log("Sleep" + " " + getVariable("playerSleep"));
+        console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+        console.log("Know Herb" + " " + getVariable("knowHerbs"));
+        console.log("Offer" + " " + getVariable("offer"));
+        console.log("Cure" + " " + getVariable("cure"))
     },
-    0
+    1
 );
 
 //gather the herbs
@@ -86,93 +152,210 @@ let gatherHerbs = action(
     () => getAgentVariable(tom, "currentLocation") == WOODS && getItemVariable(herbs, "currentLocation") == WOODS,
     () => {
         setItemVariable(herbs, "currentLocation", "tom");
-        console.log("Tom gathers the herbs in the woods.")
+        setVariable("lastAction", "Tom gathers the herbs in the woods.");
+        console.log("Tom gathers the herbs in the woods.");
+        console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+        console.log("Alchemist" + " " + getVariable("playerLocation"));
+        console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+        console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+        console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+        console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+        console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+        console.log("Sleep" + " " + getVariable("playerSleep"));
+        console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+        console.log("Know Herb" + " " + getVariable("knowHerbs"));
+        console.log("Offer" + " " + getVariable("offer"));
+        console.log("Cure" + " " + getVariable("cure"))
     },
-    0
+    1
 );
 
 //give alchemist the herbs
 let giveAlchHerbs = action(
-    () => getAgentVariable(tom, "currentLocation") == getVariable("playerLocation") && !getVariable("playerSleep") && getItemVariable(herbs, "currLocation", "tom"),
+    () => getAgentVariable(tom, "currentLocation") == getVariable("playerLocation") && !getVariable("playerSleep") && getItemVariable(herbs, "currentLocation") == "tom",
     () => {
-        setItemVariable(herbs, "currLocation", "player");
-        console.log("Tom gives you herbs to make a healing potion.")
+        setItemVariable(herbs, "currentLocation", "player");
+        setVariable("lastAction", "Tom gives you herbs to make a healing potion.");
+        console.log("Tom gives you herbs to make a healing potion.");
+        console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+        console.log("Alchemist" + " " + getVariable("playerLocation"));
+        console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+        console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+        console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+        console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+        console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+        console.log("Sleep" + " " + getVariable("playerSleep"));
+        console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+        console.log("Know Herb" + " " + getVariable("knowHerbs"));
+        console.log("Offer" + " " + getVariable("offer"));
+        console.log("Cure" + " " + getVariable("cure"))
     },
-    0
+    1
 );
 
 //steal formula
 let stealFormula = action(
-    () => getAgentVariable(tom, "currentLocation") == ALCH_HOUSE && (getVariable("playerLocation") != ALCH_HOUSE || getVariable("playerSleep")) && getItemVariable(formula, "currLocation", ALCH_HOUSE),
+    () => getAgentVariable(tom, "currentLocation") == ALCH_HOUSE && (getVariable("playerLocation") != ALCH_HOUSE || getVariable("playerSleep")) && getItemVariable(formula, "currentLocation") == ALCH_HOUSE,
     () => {
-        setItemVariable(formula, "currLocation", "tom");
-        console.log("Tom steals the formula for the healing potion.")
+        setItemVariable(formula, "currentLocation", "tom");
+        setVariable("lastAction", "Tom steals the formula for the healing potion.");
+        console.log("Tom steals the formula for the healing potion.");
+        console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+        console.log("Alchemist" + " " + getVariable("playerLocation"));
+        console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+        console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+        console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+        console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+        console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+        console.log("Sleep" + " " + getVariable("playerSleep"));
+        console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+        console.log("Know Herb" + " " + getVariable("knowHerbs"));
+        console.log("Offer" + " " + getVariable("offer"));
+        console.log("Cure" + " " + getVariable("cure"))
     },
-    0
+    1
 );
 
 //steal poison
 let stealPoison = action(
-    () => getAgentVariable(tom, "currentLocation") == ALCH_HOUSE && (getVariable("playerLocation") != ALCH_HOUSE || getVariable("playerSleep")) && getItemVariable(poison, "currLocation", ALCH_HOUSE),
+    () => getAgentVariable(tom, "currentLocation") == ALCH_HOUSE && (getVariable("playerLocation") != ALCH_HOUSE || getVariable("playerSleep")) && getItemVariable(poison, "currentLocation") == ALCH_HOUSE,
     () => {
-        setItemVariable(poison, "currLocation", "tom");
-        console.log("Tom steals poison.")
+        setItemVariable(poison, "currentLocation", "tom");
+        setVariable("lastAction", "Tom steals poison.");
+        console.log("Tom steals poison.");
+        console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+        console.log("Alchemist" + " " + getVariable("playerLocation"));
+        console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+        console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+        console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+        console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+        console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+        console.log("Sleep" + " " + getVariable("playerSleep"));
+        console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+        console.log("Know Herb" + " " + getVariable("knowHerbs"));
+        console.log("Offer" + " " + getVariable("offer"));
+        console.log("Cure" + " " + getVariable("cure"))
     },
-    0
+    1
 );
 
 //poison alchemist
 let poisonAlch = action(
-    () => getAgentVariable(tom, "currentLocation") == getVariable("playerLocation") && getItemVariable(poison, "currLocation", "tom"),
+    () => getAgentVariable(tom, "currentLocation") == getVariable("playerLocation") && getItemVariable(poison, "currentLocation") == "tom",
     () => {
-        setItemVariable(poison, "currLocation", "none");
+        setItemVariable(poison, "currentLocation", "none");
         setVariable("playerSleep", true);
         setVariable("playerPoisonTicks", 5);
-        console.log("Tom poisons you.")
+        setVariable("lastAction", "Tom poisons you.");
+        console.log("Tom poisons you.");
+        console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+        console.log("Alchemist" + " " + getVariable("playerLocation"));
+        console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+        console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+        console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+        console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+        console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+        console.log("Sleep" + " " + getVariable("playerSleep"));
+        console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+        console.log("Know Herb" + " " + getVariable("knowHerbs"));
+        console.log("Offer" + " " + getVariable("offer"));
+        console.log("Cure" + " " + getVariable("cure"))
     },
-    0
+    1
 );
 
 //make potion
 let makePotion = action(
-    () => getItemVariable(formula, "currLocation", "tom") && getItemVariable(herbs, "currLocation", "tom"),
+    () => getItemVariable(formula, "currentLocation") == "tom" && getItemVariable(herbs, "currentLocation") == "tom",
     () => {
-        setItemVariable(herbs, "currLocation", "none");
-        setItemVariable(potion, "currLocation", "tom");
-        console.log("Tom makes the potion.")
+        setItemVariable(herbs, "currentLocation", "none");
+        setItemVariable(potion, "currentLocation", "tom");
+        setVariable("lastAction", "Tom makes the potion.");
+        console.log("Tom makes the potion.");
+        console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+        console.log("Alchemist" + " " + getVariable("playerLocation"));
+        console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+        console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+        console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+        console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+        console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+        console.log("Sleep" + " " + getVariable("playerSleep"));
+        console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+        console.log("Know Herb" + " " + getVariable("knowHerbs"));
+        console.log("Offer" + " " + getVariable("offer"));
+        console.log("Cure" + " " + getVariable("cure"))
     },
-    0
+    1
 );
 
 //stealPotion
 let stealPotion = action(
-    () => getAgentVariable(tom, "currentLocation") == getVariable("playerLocation") && getVariable("playerSleep") && getItemVariable(potion, "currLocation", "player"),
+    () => getAgentVariable(tom, "currentLocation") == getVariable("playerLocation") && getVariable("playerSleep") && getItemVariable(potion, "currentLocation") == "player",
     () => {
-        setItemVariable(potion, "currLocation", "tom");
-        console.log("Tom steals the potion.")
+        setItemVariable(potion, "currentLocation", "tom");
+        setVariable("lastAction", "Tom steals the potion.");
+        console.log("Tom steals the potion.");
+        console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+        console.log("Alchemist" + " " + getVariable("playerLocation"));
+        console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+        console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+        console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+        console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+        console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+        console.log("Sleep" + " " + getVariable("playerSleep"));
+        console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+        console.log("Know Herb" + " " + getVariable("knowHerbs"));
+        console.log("Offer" + " " + getVariable("offer"));
+        console.log("Cure" + " " + getVariable("cure"))
     },
-    0
+    1
 );
 
 //make offer
 let makeOffer = action(
-    () => getAgentVariable(tom, "currentLocation") == getVariable("playerLocation") && !getVariable("playerSleep") && getItemVariable(potion, "currLocation", "player") && getItemVariable(coin, "currLocation", "tom"),
+    () => getAgentVariable(tom, "currentLocation") == getVariable("playerLocation") && !getVariable("playerSleep") && getItemVariable(potion, "currentLocation") == "player" && getItemVariable(coin, "currentLocation") == "tom",
     () => {
         setVariable(offer, true);
-        console.log("Tom offers to buy the potion.")
+        setVariable("lastAction", "Tom offers to buy the potion.");
+        console.log("Tom offers to buy the potion.");
+        console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+        console.log("Alchemist" + " " + getVariable("playerLocation"));
+        console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+        console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+        console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+        console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+        console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+        console.log("Sleep" + " " + getVariable("playerSleep"));
+        console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+        console.log("Know Herb" + " " + getVariable("knowHerbs"));
+        console.log("Offer" + " " + getVariable("offer"));
+        console.log("Cure" + " " + getVariable("cure"))
     },
-    0
+    1
 );
 
 //take potion
 let takePotion = action(
-    () => getItemVariable(potion, "currLocation", "tom"),
+    () => getItemVariable(potion, "currentLocation") == tom,
     () => {
         setVariable(cure, true);
-        setItemVariable(potion, "currLocation", "none");
-        console.log("Tom takes the potion and is cured.")
+        setItemVariable(potion, "currentLocation", "none");
+        setVariable("lastAction", "Tom takes the potion and is cured.");
+        console.log("Tom takes the potion and is cured.");
+        console.log(tom + " " + getAgentVariable(tom, "currentLocation"));
+        console.log("Alchemist" + " " + getVariable("playerLocation"));
+        console.log(herbs + " " + getItemVariable(herbs, "currentLocation"));
+        console.log(coin + " " + getItemVariable(coin, "currentLocation"));
+        console.log(potion + " " + getItemVariable(potion, "currentLocation"));
+        console.log(formula + " " + getItemVariable(formula, "currentLocation"));
+        console.log(poison + " " + getItemVariable(poison, "currentLocation"));
+        console.log("Sleep" + " " + getVariable("playerSleep"));
+        console.log("Poison Ticks" + " " + getVariable("playerPoisonTicks"));
+        console.log("Know Herb" + " " + getVariable("knowHerbs"));
+        console.log("Offer" + " " + getVariable("offer"));
+        console.log("Cure" + " " + getVariable("cure"))
     },
-    0
+    1
 );
 
 // description wrappers
@@ -223,6 +406,7 @@ let purchase = sequence([
   wait,
   wait,
   wait,
+  wait,
   makeOffer,
   takePotion
 ]);
@@ -232,6 +416,7 @@ let purchaseGather = sequence([
   gatherHerbs,
   goToALCH,
   giveAlchHerbs,
+  wait,
   makeOffer,
   takePotion
 ]);
@@ -251,7 +436,7 @@ attachTreeToAgent(tom, tomBT);
 
 var moveWOODSBT = guard(() => getVariable(playerLocation) != WOODS && !getVariable(playerSleep),
     sequence([
-            //displayDescriptionAction("You enter the docking station."),
+            displayDescriptionAction(getVariable(lastAction)),
             addUserAction("Go to the woods.", () => setVariable(playerLocation, WOODS)),
             addUserAction("Do nothing.", () => {})
         ]
@@ -259,7 +444,7 @@ var moveWOODSBT = guard(() => getVariable(playerLocation) != WOODS && !getVariab
 addUserInteractionTree(moveWOODSBT);
 var moveALCHBT = guard(() => getVariable(playerLocation) != ALCH_HOUSE && !getVariable(playerSleep),
     sequence([
-            //displayDescriptionAction("You enter the docking station."),
+            displayDescriptionAction(getVariable(lastAction)),
             addUserAction("Go home.", () => setVariable(playerLocation, ALCH_HOUSE)),
             addUserAction("Do nothing.", () => {})
         ]
@@ -288,7 +473,7 @@ var acceptOfferBT = guard(() => getVariable(playerLocation) == getAgentVariable(
             addUserAction("Sell the potion to Tom.", () => {setItemVariable(coin, "currentLocation", "player"); setItemVariable(potion, "currentLocation", "tom")})
         ]
     ));
-addUserInteractionTree(makePotionBT);
+addUserInteractionTree(acceptOfferBT);
 //go to go to sleep
 var sleepBT = guard(() => !getVariable(playerSleep),
     sequence([
@@ -300,20 +485,21 @@ addUserInteractionTree(sleepBT);
 //wake up
 var wakeBT = guard(() => getVariable(playerPoisonTicks) == 0 && getVariable(playerSleep),
     sequence([
-            //displayDescriptionAction("You enter the docking station."),
+            displayDescriptionAction(getVariable(lastAction)),
             addUserAction("Wake up.", () => setVariable(playerSleep, false)),
             addUserAction("Do nothing.", () => {})
         ]
     ));
 addUserInteractionTree(wakeBT);
 //be poisoned
-var wakeBT = guard(() => getVariable(playerPoisonTicks) > 0,
+var poisonedBT = guard(() => getVariable(playerPoisonTicks) > 0,
     sequence([
-            displayDescriptionAction("You are poisoned."),
+            displayDescriptionAction("You are poisoned. "),
+            displayDescriptionAction(getVariable(lastAction)),
             addUserAction("Do nothing.", () => {setVariable(playerPoisonTicks, getVariable(playerPoisonTicks)-1)})
         ]
     ));
-addUserInteractionTree(wakeBT);
+addUserInteractionTree(poisonedBT);
 var gameOver = guard(() => getVariable(cure),
     displayDescriptionAction("Tom is cured!"));
 addUserInteractionTree(gameOver);
@@ -365,14 +551,14 @@ function render() {
 // };
 //
 // function displayPlayer() {
-//     var currLocation = getVariable(playerLocation);
-//     if (!isUndefined(mapPositions[currLocation]))
-//         context.drawImage(playerImage, displayPanel.x + mapPositions[currLocation].x, displayPanel.y + mapPositions[currLocation].y, 16, 16);
+//     var currentLocation = getVariable(playerLocation);
+//     if (!isUndefined(mapPositions[currentLocation]))
+//         context.drawImage(playerImage, displayPanel.x + mapPositions[currentLocation].x, displayPanel.y + mapPositions[currentLocation].y, 16, 16);
 // }
 //
 // function displayAlien() {
-//     var currLocation = getAgentVariable(alien, "currentLocation");
-//     context.drawImage(alienImage, displayPanel.x + mapPositions[currLocation].x, displayPanel.y + mapPositions[currLocation].y, 24, 24);
+//     var currentLocation = getAgentVariable(alien, "currentLocation");
+//     context.drawImage(alienImage, displayPanel.x + mapPositions[currentLocation].x, displayPanel.y + mapPositions[currentLocation].y, 24, 24);
 // }
 //
  spaceshipImage.src = "../images/isolation_map.png";

@@ -30,10 +30,27 @@ var blackboard = {};
 function getActionTick(id: number): ActionTick {
     return (precondition, effect, ticksRequired = 1) => {
         return () => {
+            var util = getVariable("utility");
+            if (util) {
+              if (!blackboard[id]) {
+                  blackboard[id] = {};
+              }
+              if (!blackboard[id].utility){
+                var utility = 1;
+                blackboard[id].utility = utility;
+              }
+              setVariable("lastUtil", utility);
+              return Status.RUNNING;
+            }
+
             if (precondition()) {
                 if (!blackboard[id]) {
                     blackboard[id] = {};
                     blackboard[id].ticksDone = ticksRequired;
+                }
+
+                if (!blackboard[id].ticksDone) {
+                  blackboard[id].ticksDone = ticksRequired;
                 }
 
                 if (blackboard[id].ticksDone > 0) {
@@ -62,6 +79,26 @@ function getGuardTick(): GuardTick {
 function getSequenceTick(id: number): CompositeTick {
     return (astTicks) => {
         return () => {
+            var util = getVariable("utility");
+            if (util) {
+              if (!blackboard[id]) {
+                  blackboard[id] = {};
+                  blackboard[id].currentIndexP = 0;
+              }
+              if (!blackboard[id].utility){
+                var utility = 0;
+                while (blackboard[id].currentIndexP < astTicks.length) {
+                    var childStatus = execute(astTicks[blackboard[id].currentIndexP]);
+                    blackboard[id].currentIndexP += 1;
+                    utility += getVariable("lastUtil");
+                }
+                utility = utility/astTicks.length;
+                blackboard[id].utility = utility;
+              }
+              setVariable("lastUtil", utility);
+              return Status.RUNNING;
+            }
+
             if (!blackboard[id]) {
                 blackboard[id] = {};
                 blackboard[id].currentIndex = 0;
@@ -85,6 +122,27 @@ function getSequenceTick(id: number): CompositeTick {
 function getSelectorTick(id: number): CompositeTick {
     return (astTicks) => {
         return () => {
+            var util = getVariable("utility");
+            if (util) {
+              if (!blackboard[id]) {
+                  blackboard[id] = {};
+                  blackboard[id].currentIndexP = 0;
+              }
+              if (!blackboard[id].utility){
+                var utility = 0;
+                while (blackboard[id].currentIndexP < astTicks.length) {
+                    var childStatus = execute(astTicks[blackboard[id].currentIndexP]);
+                    blackboard[id].currentIndexP += 1;
+                    if (utility < getVariable("lastUtil")){
+                      utility = getVariable("lastUtil");
+                    }
+                }
+                blackboard[id]["utility"] = utility;
+              }
+              setVariable("lastUtil", utility);
+              return Status.RUNNING;
+            }
+
             if (!blackboard[id]) {
                 blackboard[id] = {};
                 blackboard[id].currentIndex = 0;
@@ -142,6 +200,26 @@ export function sequence(astTicks: Tick[]): Tick {
 export function selector(astTicks: Tick[]): Tick {
     return getSelectorTick(globalIdCounter++)(astTicks);
 }
+
+/**
+ * Cycles over its children: iterates to the next child on failure of a child(think of it as if-else blocks)
+ * Succeeds if even one succeeds, else fails
+ * @param {Tick[]} astTicks
+ * @returns {Tick}
+ */
+// export function selectorUtility(astTicks: Tick[]): Tick {
+//     return () -> {
+//       setVariable("utility", true);
+//       var priorityTicks: Tick[] = new Array();
+//       for (int i = 0; i < astTicks.length; i++){
+//         execute(astTicks[i]);
+//
+//       }
+//       setVariable("utility", false);
+//       return getSelectorTick(globalIdCounter++)(astTicks);
+//     }
+//   }
+// }
 
 
 /*--------------- APIs --------------- */
