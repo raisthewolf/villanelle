@@ -4,7 +4,7 @@ import {
     getRandNumber, getVariable, sequence, selector, execute, Precondition, getAgentVariable, neg_guard, guard,
     isVariableNotSet, displayDescriptionAction, addUserAction, addUserInteractionTree, initialize,
     getUserInteractionObject, executeUserAction, worldTick, attachTreeToAgent, setItemVariable, getItemVariable,
-    displayActionEffectText, areAdjacent, addUserActionTree
+    displayActionEffectText, areAdjacent, addUserActionTree, displayDescriptionDynamicAction
 } from "./scripting";
 import {isUndefined} from "typescript-collections/dist/lib/util";
 
@@ -408,6 +408,7 @@ let purchase = sequence([
   wait,
   wait,
   makeOffer,
+  wait,
   takePotion
 ]);
 
@@ -418,6 +419,7 @@ let purchaseGather = sequence([
   giveAlchHerbs,
   wait,
   makeOffer,
+  wait,
   takePotion
 ]);
 
@@ -434,24 +436,32 @@ attachTreeToAgent(tom, tomBT);
 // 3. Construct story
 // create user actions
 
-var moveWOODSBT = guard(() => getVariable(playerLocation) != WOODS && !getVariable(playerSleep),
+var moveWOODSBT = guard(() => getVariable(playerLocation) != WOODS && !getVariable(playerSleep) && !getVariable(cure),
     sequence([
-            displayDescriptionAction(getVariable(lastAction)),
+            displayDescriptionDynamicAction(
+              () => {
+                return getVariable("lastAction")
+              }
+            ),
             addUserAction("Go to the woods.", () => setVariable(playerLocation, WOODS)),
             addUserAction("Do nothing.", () => {})
         ]
     ));
 addUserInteractionTree(moveWOODSBT);
-var moveALCHBT = guard(() => getVariable(playerLocation) != ALCH_HOUSE && !getVariable(playerSleep),
+var moveALCHBT = guard(() => getVariable(playerLocation) != ALCH_HOUSE && !getVariable(playerSleep) && !getVariable(cure),
     sequence([
-            displayDescriptionAction(getVariable(lastAction)),
+            displayDescriptionDynamicAction(
+              () => {
+                return getVariable("lastAction")
+              }
+            ),
             addUserAction("Go home.", () => setVariable(playerLocation, ALCH_HOUSE)),
             addUserAction("Do nothing.", () => {})
         ]
     ));
 addUserInteractionTree(moveALCHBT);
 //gather herbs
-var gatherHerbsBT = guard(() => getVariable(playerLocation) == getItemVariable(herbs, "currentLocation") && !getVariable(playerSleep) && getVariable(knowHerbs),
+var gatherHerbsBT = guard(() => getVariable(playerLocation) == getItemVariable(herbs, "currentLocation") && !getVariable(playerSleep) && getVariable(knowHerbs) && !getVariable(cure),
     sequence([
             //displayDescriptionAction("You enter the docking station."),
             addUserAction("Gather the herbs.", () => setItemVariable(herbs, "currentLocation", "player"))
@@ -459,7 +469,7 @@ var gatherHerbsBT = guard(() => getVariable(playerLocation) == getItemVariable(h
     ));
 addUserInteractionTree(gatherHerbsBT);
 //make Potion
-var makePotionBT = guard(() => getVariable(playerLocation) == ALCH_HOUSE && getItemVariable(herbs, "currentLocation") == "player" && !getVariable(playerSleep),
+var makePotionBT = guard(() => getVariable(playerLocation) == ALCH_HOUSE && getItemVariable(herbs, "currentLocation") == "player" && !getVariable(playerSleep) && !getVariable(cure),
     sequence([
             //displayDescriptionAction("You enter the docking station."),
             addUserAction("Make the potion.", () => {setItemVariable(herbs, "currentLocation", "none"); setItemVariable(potion, "currentLocation", "player")})
@@ -467,7 +477,7 @@ var makePotionBT = guard(() => getVariable(playerLocation) == ALCH_HOUSE && getI
     ));
 addUserInteractionTree(makePotionBT);
 //accept offer
-var acceptOfferBT = guard(() => getVariable(playerLocation) == getAgentVariable(tom, "currentLocation") && getItemVariable(potion, "currentLocation") == "player" && !getVariable(playerSleep) && getVariable(offer),
+var acceptOfferBT = guard(() => getVariable(playerLocation) == getAgentVariable(tom, "currentLocation") && getItemVariable(potion, "currentLocation") == "player" && !getVariable(playerSleep) && getVariable(offer) && !getVariable(cure),
     sequence([
             //displayDescriptionAction("You enter the docking station."),
             addUserAction("Sell the potion to Tom.", () => {setItemVariable(coin, "currentLocation", "player"); setItemVariable(potion, "currentLocation", "tom")})
@@ -475,7 +485,7 @@ var acceptOfferBT = guard(() => getVariable(playerLocation) == getAgentVariable(
     ));
 addUserInteractionTree(acceptOfferBT);
 //go to go to sleep
-var sleepBT = guard(() => !getVariable(playerSleep),
+var sleepBT = guard(() => !getVariable(playerSleep) && !getVariable(cure),
     sequence([
             //displayDescriptionAction("You enter the docking station."),
             addUserAction("Go to sleep.", () => setVariable(playerSleep, true)),
@@ -483,16 +493,20 @@ var sleepBT = guard(() => !getVariable(playerSleep),
     ));
 addUserInteractionTree(sleepBT);
 //wake up
-var wakeBT = guard(() => getVariable(playerPoisonTicks) == 0 && getVariable(playerSleep),
+var wakeBT = guard(() => getVariable(playerPoisonTicks) == 0 && getVariable(playerSleep) && !getVariable(cure),
     sequence([
-            displayDescriptionAction(getVariable(lastAction)),
+            displayDescriptionDynamicAction(
+              () => {
+                return getVariable("lastAction")
+              }
+            ),
             addUserAction("Wake up.", () => setVariable(playerSleep, false)),
             addUserAction("Do nothing.", () => {})
         ]
     ));
 addUserInteractionTree(wakeBT);
 //be poisoned
-var poisonedBT = guard(() => getVariable(playerPoisonTicks) > 0,
+var poisonedBT = guard(() => getVariable(playerPoisonTicks) > 0 && !getVariable(cure),
     sequence([
             displayDescriptionAction("You are poisoned. "),
             displayDescriptionAction(getVariable(lastAction)),

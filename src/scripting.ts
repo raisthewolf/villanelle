@@ -12,6 +12,7 @@ function terminateAndReturn(id: number, blackboard: any, status: Status) {
     return status;
 }
 
+export type Message = () => string
 export type Effect = () => void
 export type Precondition = () => boolean
 export type Tick = () => Status
@@ -30,6 +31,23 @@ var blackboard = {};
 function getActionTick(id: number): ActionTick {
     return (precondition, effect, ticksRequired = 1) => {
         return () => {
+
+            // start of utility code
+            if (getVariable("utilityCalc")) {
+              //calculate utility from features of action
+              var util = utility(1);
+              //set utility in agent:ID
+              var index = getVariable("utilityAgent") + ":" + id;
+              if (!blackboard[index]) {
+                blackboard[index] = {};
+              }
+              blackboard[index].utility = util;
+              // set last utility to utility
+              setVariable("lastUtil", util);
+              // return RUNNING
+              return Status.RUNNING;
+            }
+
             if (precondition()) {
                 if (!blackboard[id]) {
                     blackboard[id] = {};
@@ -53,6 +71,26 @@ function getActionTick(id: number): ActionTick {
 function getGuardTick(): GuardTick {
     return (precondition, astTick, negate = false) => {
         return () => {
+
+            // start of utility code
+            if (getVariable("utilityCalc")) {
+              //utility is average of children
+              // calc utility of child
+              astTick();
+              var util = getVariable("lastUtil");
+              // set utility as utility of child in agent:id
+              var index = getVariable("utilityAgent") + ":" + id;
+              if (!blackboard[index]) {
+                blackboard[index] = {};
+              }
+              blackboard[index].utility = util;
+              // set last utility to utility of child
+              setVariable("lastUtil", util);
+              // return RUNNING
+              return Status.RUNNING;
+            }
+
+
             let proceed = negate ? !precondition() : precondition();
             return proceed ? execute(astTick) : Status.FAILURE;
         }
@@ -62,6 +100,32 @@ function getGuardTick(): GuardTick {
 function getSequenceTick(id: number): CompositeTick {
     return (astTicks) => {
         return () => {
+
+            // start of utility code
+            if (getVariable("utilityCalc")) {
+              //utility is average of children
+              //get compiled utility from each child
+              var util = 0;
+              var count = 0;
+              for (var i = 0; i < astTicks.length; i++) {
+                astTicks[i]();
+                var lastUtil = getVariable("lastUtil");
+                util += lastUtil;
+                count += 1;
+              }
+              util = util/count;
+              // set utility for agent:id to average
+              var index = getVariable("utilityAgent") + ":" + id;
+              if (!blackboard[index]) {
+                blackboard[index] = {};
+              }
+              blackboard[index].utility = util;
+              // set last utility
+              setVariable("lastUtil", util);
+              // return RUNNING
+              return Status.RUNNING;
+            }
+
             if (!blackboard[id]) {
                 blackboard[id] = {};
                 blackboard[id].currentIndex = 0;
@@ -85,6 +149,31 @@ function getSequenceTick(id: number): CompositeTick {
 function getSelectorTick(id: number): CompositeTick {
     return (astTicks) => {
         return () => {
+
+            // start of utility code
+            if (getVariable("utilityCalc")) {
+              //utility is max of children
+              //get compiled utility from each child
+              var util = -2;
+              for (var i = 0; i < astTicks.length; i++) {
+                astTicks[i]();
+                var lastUtil = getVariable("lastUtil");
+                if (lastUtil > util) {
+                  util = lastUtil;
+                }
+              }
+              // set utility for agent:id to max
+              var index = getVariable("utilityAgent") + ":" + id;
+              if (!blackboard[index]) {
+                blackboard[index] = {};
+              }
+              blackboard[index].utility = util;
+              // set last utility
+              setVariable("lastUtil", util);
+              // return RUNNING
+              return Status.RUNNING;
+            }
+
             if (!blackboard[id]) {
                 blackboard[id] = {};
                 blackboard[id].currentIndex = 0;
@@ -103,6 +192,10 @@ function getSelectorTick(id: number): CompositeTick {
             return terminateAndReturn(id, blackboard, Status.FAILURE);
         }
     }
+}
+
+export function utility(f: number): number {
+    return f;
 }
 
 export function execute(astTick: Tick): Status {
@@ -226,7 +319,7 @@ export function getNextLocation(start: string, destination: string): string {
 
 //1.2 agents
 var agents = [];
-var personalityAgents = [];
+var personalityAgents = {};
 
 export function addAgent(agentName: string) {
     agents.push(agentName);
@@ -247,7 +340,7 @@ export function addPersonalityAgent(agentName: string, o1: number, o2: number, c
     personality["politeness"] = a2;
     personality["volatility"] = n1;
     personality["withdrawal"] = n2;
-    personalityAgents.push(personality);
+    personalityAgents[agentName] = personality;
     return agentName;
 }
 
@@ -324,6 +417,16 @@ var agentTrees = {};
 
 export function attachTreeToAgent(agent: string, tree: Tick) {
     agentTrees[agent] = tree;
+    setVariable("utilityCalc", false);
+    //code to determine utility here, only if personality agent
+    if (personalityAgents[agent]) {
+      //setVariable utilityCalc, call tree
+      setVariable("utilityCalc", true);
+      setVariable("utilityAgent", agent);
+      tree();
+      setVariable("utilityCalc", false);
+    }
+
 }
 
 //3.1
@@ -351,6 +454,17 @@ export let displayDescriptionAction = (text: string) =>
         () => true,
         () => userInteractionObject.text += "\n" + text, 0
     );
+
+export let displayDescriptionDynamicAction = (func: Message) =>
+    action(
+        () => true,
+        () => {
+          var text = func();
+          userInteractionObject.text += "\n" + text
+        },
+        0
+    );
+
 export let displayActionEffectText = (text: string) => userInteractionObject.actionEffectsText += "\n" + text;
 
 export let addUserActionTree = (text: string, effectTree: Tick) => action(
@@ -398,10 +512,11 @@ export function worldTick() {
             execute(tree);
         }
     }
-    for (var i = 0; i < personalityAgents.length; i++) {
-        var tree = agentTrees[personalityAgents[i]["name"]];
+    var pAgents = Object.keys(personalityAgents);
+    for (var i = 0; i < pAgents.length; i++) {
+        var tree = agentTrees[pAgents[i]];
         if (!isUndefined(tree)) {
-            setVariable("executingAgent", personalityAgents[i]["name"]);
+            setVariable("executingAgent", pAgents[i]);
             execute(tree);
         }
     }
